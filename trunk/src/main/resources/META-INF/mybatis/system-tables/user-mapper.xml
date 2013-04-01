@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SecurityUserPO">
+	<!-- 设置1分钟缓存,缓存大小1024，采用最近最少使用算法 -->
+	<cache readOnly="true" flushInterval="60000" size="10" eviction="LRU" />
+	
+	
+	<resultMap type="SecurityUserPO" id="SecurityUserPOResultMap">
+	
+	 
+	  <constructor>
+	  	<arg javaType="string" column="password"/>
+	  	<arg javaType="string" column="salt"/>
+	  	<arg javaType="string" column="username"/>
+	  	<arg javaType="string" column="realname"/>
+	  </constructor>
+	
+	  <id property="id" column="id"/>
+	  <result property="createTime" column="create_time"/>
+	  <result property="password" column="password"/>
+	  <result property="salt" column="salt"/>
+	  <result property="status" column="status"/>
+	  <result property="username" column="username"/>
+	  <result property="email" column="email"/>
+	  <result property="realname" column="realname"/>
+	  <result property="phone" column="phone"/>
+	  <result property="org_id" column="org_id"/>
+	  
+	  
+	</resultMap>
+	
+	<resultMap type="SecurityRolePO" id="SecurityRolePOResultMap">
+	  <id property="id" column="id"/>
+	  <result property="roleName" column="role_name"/>
+	  <result property="roleCode" column="role_code"/>
+	  <result property="createTime" column="create_time"/>
+	  
+	</resultMap>
+	
+	<resultMap type="SecurityUserRolePO" id="SecurityUserRolePOResultMap">
+	  <id property="id" column="id"/>
+	  <result property="priority" column="priority"/>
+	  <result property="roleId" column="role_id"/>
+	  <result property="UserId" column="user_id"/>
+	  
+	  <result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	
+	
+	<resultMap type="SecurityRolePermission" id="SecurityRolePermissionResultMap">
+	  <result property="roleId" column="role_id"/>
+	  <result property="permission" column="permission"/>
+	  <result property="desc" column="desc"/>
+	  
+	  <result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	
+	
+	<resultMap type="SecurityModule" id="SecurityModuleResultMap">
+	  <id property="id" column="id"/>
+	  <result property="description" column="description"/>
+	  <result property="name" column="name"/>
+	  <result property="prority" column="prority"/>
+	  <result property="url" column="url"/>
+	  <result property="parentId" column="parentId"/>
+	  <result property="sn" column="sn"/>
+	  
+	  <result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	<!-- ######用户###### -->
+	<select id="SELECT_ALL_USER" resultMap="SecurityUserPOResultMap" resultType="list">
+		SELECT * FROM security_user ORDER BY id ASC;
+	</select>
+	
+	<select id="SELECT_BY_ID" resultMap="SecurityUserPOResultMap" resultType="SecurityUserPO" parameterType="long">
+		SELECT * FROM security_user WHERE id = #{id}
+	</select>
+	
+	<select id="SELECT_BY_LOGINNAME" parameterType="string" resultMap="SecurityUserPOResultMap" resultType="SecurityUserPO">
+	   SELECT * FROM security_user WHERE username = #{username} ;
+	</select>
+	
+	<insert id="INSERT_SECURITYUSERPO" parameterType="SecurityUserPO">
+		INSERT INTO security_user ( create_time , password , salt , status , username , email , realname , phone , org_id )
+		VALUES( #{createTime} , #{password} , #{salt} , #{status} , #{username} , #{email} , #{realname} , #{phone} , #{org_id} );
+	</insert>
+	
+	<update id="UPDATE_BY_ID" parameterType="SecurityUserPO">
+		UPDATE security_user
+		<set>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			
+			<if test="salt != null">
+				salt = #{salt},
+			</if>
+			
+			<if test="status != null">
+				status = #{status},
+			</if>
+			
+			<if test="email != null">
+				email = #{email},
+			</if>
+			
+			<if test="realname != null">
+				realname = #{realname},
+			</if>
+			
+			<if test="phone != null">
+				phone = #{phone},
+			</if>
+			
+			<if test="org_id != null">
+				org_id = #{org_id}
+			</if>
+		</set>
+		
+		<where> 
+			<if test="id != null">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+	<delete id="DELETE_BY_ID" parameterType="long">
+		DELETE FROM security_user WHERE id = #{id};
+	</delete>
+	
+	
+	
+	<!-- ######角色###### -->
+	
+	
+	<select id="SELECT_ROLE_BY_ID" resultMap="SecurityRolePOResultMap" resultType="SecurityRolePO" parameterType="long">
+		SELECT * FROM security_role WHERE id = #{roleId};
+	</select>
+	
+	
+	<insert id="INSERT_ROLE" parameterType="SecurityRolePO">
+		INSERT INTO security_role ( create_time , role_name , role_code )
+		VALUES( #{createTime} , #{roleName} , #{roleCode} );
+	</insert>
+	
+	
+	<update id="UPDATE_ROLE" parameterType="SecurityRolePO">
+		UPDATE security_role
+		<set>
+			<if test="roleName != null">
+				role_name = #{roleName},
+			</if>
+			
+			<if test="roleCode != null">
+				role_code = #{roleCode},
+			</if>
+		</set>
+		
+		<where> 
+			<if test="id != null">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+	<delete id="DELETE_ROLE" parameterType="long">
+		DELETE FROM security_role WHERE id = #{id};
+	</delete>
+	
+	
+	<!-- ###### 用户角色###### -->
+	
+	
+	<select id="SELECTS_USERROLE_BY_USERID" parameterType="long" resultMap="SecurityUserRolePOResultMap" resultType="list">
+		SELECT * FROM security_user_role WHERE user_id = #{userId};
+	</select>
+	
+	
+	<insert id="INSERT_USERROLE" parameterType="SecurityUserRolePO">
+		INSERT INTO security_user_role ( create_time , priority , role_id , user_id )
+		VALUES( #{createTime} , #{priority} , #{roleId} , #{userId} );
+	</insert>
+	
+	
+	<update id="UPDATE_USERROLE" parameterType="SecurityRolePO">
+		UPDATE security_user_role
+		<set>
+			<if test="priority != null">
+				priority = #{priority},
+			</if>
+			
+			<if test="roleId != null">
+				role_id = #{roleId},
+			</if>
+			
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+		</set>
+		
+		<where> 
+			<if test="id != null">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+	<delete id="DELETE_USERROLE" parameterType="long" >
+		DELETE FROM security_user_role WHERE user_id = #{userId};
+	</delete>
+	
+	
+	
+	<!-- ######用户角色权限###### -->
+	<select id="SELECTS_PERMISSION_BY_ROLEID" parameterType="long" resultType="list" resultMap="SecurityRolePermissionResultMap">
+		SELECT * FROM security_role_permission WHERE role_id = #{roleId};
+	</select>
+	
+	
+	
+	
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!-- - Log4j配置文件。 -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<!-- ===================================================================== -->
+	<!-- Appenders -->
+	<!-- ===================================================================== -->
+	<!-- [公共Appender] 默认 -->
+	<appender name="DEFAULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${catalina.base}/logs/common-default.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="GBK" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{MMdd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [公共Appender] 默认 -->
+	<appender name="DAL-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${catalina.base}/logs/common-dal.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="GBK" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{MMdd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [公共Appender] 汇总错误 -->
+	<appender name="ERROR-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${catalina.base}/logs/common-error.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="GBK" />
+		<param name="threshold" value="error" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{MMdd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [公共Appender] 汇总错误 -->
+	<appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{MMdd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="DEBUG" />
+			<param name="LevelMax" value="DEBUG" />
+		</filter>
+	</appender>
+
+	
+	<logger name="java.sql.Connection" additivity="true">
+		<level value="WARN" />
+	</logger>
+	<logger name="java.sql.Statement" additivity="true">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<logger name="java.sql.PreparedStatement" additivity="true">
+		<level value="DEBUG" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<logger name="org.apache" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="DEFAULT-APPENDER" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<logger name="org.springframework" additivity="false">
+		<level value="WARM" />
+		<appender-ref ref="DEFAULT-APPENDER" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<logger name="org.mybatis" additivity="false">
+		<level value="WARM" />
+		<appender-ref ref="DEFAULT-APPENDER" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+
+	<logger name="DAL_LOGGER" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="DAL-APPENDER" />
+		<appender-ref ref="ERROR-APPENDER" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<logger name="cn.tbj" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="DEFAULT-APPENDER" />
+		<appender-ref ref="ERROR-APPENDER" />
+		<appender-ref ref="CONSOLE-APPENDER" />
+	</logger>
+	<!-- ===================================================================== -->
+	<!-- Root logger -->
+	<!-- ===================================================================== -->
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="ERROR-APPENDER" />
+	</root>
+</log4j:configuration>
